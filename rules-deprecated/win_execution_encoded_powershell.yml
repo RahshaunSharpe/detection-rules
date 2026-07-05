@@ -1,6 +1,6 @@
 title: Encoded PowerShell Command Execution
 id: c4e9f0a2-6b8d-4f1c-8a3e-9d7b2c5f4e60
-status: experimental
+status: deprecated
 description: |
     Detects PowerShell launched with an encoded command, frequently used by
     malware droppers and offensive frameworks to obfuscate payloads.
@@ -9,7 +9,10 @@ references:
     - https://attack.mitre.org/techniques/T1027/
 author: SDOGEneral
 date: 2026-07-04
-modified: 2026-07-04
+modified: 2026-07-05
+related:
+    - id: 8fa7eed6-c74f-4c40-9695-60aa4cf05c68
+      type: similar
 tags:
     - attack.execution
     - attack.defense-evasion
