@@ -1,7 +1,7 @@
 # Replace @your-org/... with your real teams or usernames
-/rules/              @your-org/detection-engineers
-/filters/            @your-org/detection-engineers
-/pipelines/          @your-org/detection-leads
-/scripts/            @your-org/detection-leads
-/.github/            @your-org/detection-leads
-/droid_config.toml   @your-org/detection-leads
+/rules/              RahshaunSharpe
+/filters/            RahshaunSharpe
+/pipelines/          RahshaunSharpe
+/scripts/            RahshaunSharpe
+/.github/            RahshaunSharpe
+/droid_config.toml   RahshaunSharpe
