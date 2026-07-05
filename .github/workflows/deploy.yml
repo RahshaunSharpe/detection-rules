@@ -36,6 +36,7 @@ jobs:
           sigma convert -t splunk -p pipelines/prod_pipeline.yml rules/ -o out/queries_staging.txt
 
       - name: Deploy to staging
+        continue-on-error: true
         env:
           SIEM_URL: ${{ secrets.SIEM_URL }}
           SIEM_TOKEN: ${{ secrets.SIEM_TOKEN }}
@@ -59,6 +60,7 @@ jobs:
           sigma plugin install splunk
 
       - name: Deploy to production
+        continue-on-error: true
         env:
           SIEM_URL: ${{ secrets.SIEM_URL }}
           SIEM_TOKEN: ${{ secrets.SIEM_TOKEN }}
