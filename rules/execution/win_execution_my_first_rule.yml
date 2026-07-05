@@ -1,6 +1,6 @@
 title: First Rule PowerShell Command Execution
 id: 8fa7eed6-c74f-4c40-9695-60aa4cf05c68
-status: experimental
+status: test
 description: |
     Detects PowerShell launched with an encoded command, frequently used by
     malware droppers and offensive frameworks to obfuscate payloads.
@@ -9,7 +9,7 @@ references:
     - https://attack.mitre.org/techniques/T1027/
 author: SDOGEneral
 date: 2026-07-04
-modified: 2026-07-04
+modified: 2026-07-05
 tags:
     - attack.execution
     - attack.defense-evasion
