@@ -14,13 +14,13 @@ transformations:
             product: windows
 
     # Example field mapping: adjust to your CIM/ECS/normalization layer
-    - id: fieldmap_process_creation
-      type: field_name_mapping
-      mapping:
-          Image: 'process_path'
-          CommandLine: 'process_command_line'
-          OriginalFileName: 'process_original_file_name'
-          TargetObject: 'registry_path'
-      rule_conditions:
-          - type: logsource
-            product: windows
+    #- id: fieldmap_process_creation
+     # type: field_name_mapping
+     # mapping:
+     #     Image: 'process_path'
+      #    CommandLine: 'process_command_line'
+      #    OriginalFileName: 'process_original_file_name'
+      #    TargetObject: 'registry_path'
+     # rule_conditions:
+      #    - type: logsource
+      #      product: windows
