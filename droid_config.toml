@@ -1,0 +1,19 @@
+# droid configuration — OPTIONAL alternative to scripts/deploy.py
+# Docs: https://github.com/certeu/droid — verify keys against your droid version.
+
+[base]
+sigma_rules_directory = "rules"
+
+[platforms.splunk]
+url = "https://splunk.example.com:8089"
+# token via env var / CI secret, not committed here
+app = "search"
+job_ttl = 300
+
+# [platforms.microsoft_sentinel]
+# subscription_id = "..."
+# resource_group = "..."
+# workspace_name = "..."
+
+[pipelines]
+splunk = "pipelines/prod_pipeline.yml"

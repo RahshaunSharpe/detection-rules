@@ -1,0 +1,33 @@
+title: Suspicious Registry Run Key Persistence
+id: 3f6a1e2b-9c4d-4e8f-a1b2-7d5e9c0a4f18
+status: experimental
+description: |
+    Detects processes writing to Run/RunOnce registry keys from suspicious
+    paths (user-writable locations), a common persistence technique.
+references:
+    - https://attack.mitre.org/techniques/T1547/001/
+author: SDOGEneral
+date: 2026-07-04
+modified: 2026-07-04
+tags:
+    - attack.persistence
+    - attack.t1547.001
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject|contains:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+    suspicious_image:
+        Image|contains:
+            - '\AppData\'
+            - '\Temp\'
+            - '\Users\Public\'
+            - '\ProgramData\'
+    condition: selection and suspicious_image
+falsepositives:
+    - Legitimate software installers running from user temp directories
+    - Auto-updaters (browsers, Electron apps) writing their own run keys
+level: medium

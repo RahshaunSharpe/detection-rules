@@ -1,0 +1,65 @@
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - 'rules/**'
+      - 'filters/**'
+      - 'pipelines/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install toolchain
+        run: |
+          pip install sigma-cli yamllint pyyaml
+          sigma plugin install splunk
+          # Add/replace with your target backend(s):
+          # sigma plugin install microsoft365defender
+          # sigma plugin install elasticsearch
+
+      - name: YAML lint
+        run: yamllint -c .yamllint.yml rules/
+
+      - name: Sigma schema validation
+        run: sigma check rules/
+
+      - name: Metadata policy lint
+        run: python scripts/lint_metadata.py rules/
+
+      - name: Check for duplicate rule IDs
+        run: |
+          DUPES=$(grep -rhoP '^id:\s*\K[0-9a-f-]{36}' rules/ | sort | uniq -d)
+          if [ -n "$DUPES" ]; then
+            echo "::error::Duplicate rule IDs found: $DUPES"
+            exit 1
+          fi
+
+      - name: Conversion smoke test (changed rules only)
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'rules/**/*.yml' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No rule changes."
+            exit 0
+          fi
+          FAIL=0
+          for f in $CHANGED; do
+            [ -f "$f" ] || continue  # skip deleted files
+            echo "::group::$f"
+            sigma convert -t splunk --without-pipeline "$f" || FAIL=1
+            echo "::endgroup::"
+          done
+          exit $FAIL

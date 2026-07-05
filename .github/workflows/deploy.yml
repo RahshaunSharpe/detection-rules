@@ -1,0 +1,74 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'rules/**'
+      - 'filters/**'
+      - 'pipelines/**'
+      - 'droid_config.toml'
+
+permissions:
+  contents: read
+  id-token: write   # for OIDC (e.g., Sentinel/Azure federation)
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install toolchain
+        run: |
+          pip install sigma-cli pyyaml requests
+          sigma plugin install splunk
+
+      - name: Convert rules (staging)
+        run: |
+          mkdir -p out
+          sigma convert -t splunk -p pipelines/prod_pipeline.yml rules/ -o out/queries_staging.txt
+
+      - name: Deploy to staging
+        env:
+          SIEM_URL: ${{ secrets.SIEM_URL }}
+          SIEM_TOKEN: ${{ secrets.SIEM_TOKEN }}
+        run: python scripts/deploy.py --env staging --rules rules/ --pipeline pipelines/prod_pipeline.yml
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production   # manual approval gate configured on this environment
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install toolchain
+        run: |
+          pip install sigma-cli pyyaml requests
+          sigma plugin install splunk
+
+      - name: Deploy to production
+        env:
+          SIEM_URL: ${{ secrets.SIEM_URL }}
+          SIEM_TOKEN: ${{ secrets.SIEM_TOKEN }}
+        run: python scripts/deploy.py --env production --rules rules/ --pipeline pipelines/prod_pipeline.yml
+
+# ------------------------------------------------------------------
+# Alternative: droid-based deployment (multi-SIEM). Replace the
+# convert+deploy steps above with:
+#
+#   - run: pip install droid  # check certeu/droid docs for package name
+#   - run: droid -cf droid_config.toml --validate --rules rules/
+#   - run: droid -cf droid_config.toml --export --platform splunk --rules rules/
+# ------------------------------------------------------------------

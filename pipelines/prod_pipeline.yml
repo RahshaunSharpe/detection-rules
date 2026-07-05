@@ -1,0 +1,26 @@
+# pySigma processing pipeline — CUSTOMIZE FOR YOUR ENVIRONMENT.
+# Maps generic Sigma logsources/fields to your indexes and field names.
+# Docs: https://sigmahq.io/docs/digging-deeper/pipelines.html
+name: prod_environment
+priority: 100
+transformations:
+    # Route Windows logsources to the right index/sourcetype (Splunk example)
+    - id: index_windows
+      type: add_condition
+      conditions:
+          index: 'wineventlog'
+      rule_conditions:
+          - type: logsource
+            product: windows
+
+    # Example field mapping: adjust to your CIM/ECS/normalization layer
+    - id: fieldmap_process_creation
+      type: field_name_mapping
+      mapping:
+          Image: 'process_path'
+          CommandLine: 'process_command_line'
+          OriginalFileName: 'process_original_file_name'
+          TargetObject: 'registry_path'
+      rule_conditions:
+          - type: logsource
+            product: windows
